@@ -1,0 +1,105 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <time.h>
+
+int compcount = 0;
+
+void swap(int *a, int *b);
+void insergesort(int *a, int sizea);
+void stoogesort(int [], int, int);
+void shuffle(int *array, size_t n);
+
+int main()
+{
+    int *a, *b, i, j;
+    FILE *inserge, *stooge;
+    
+    inserge = fopen("inserge.dat", "w");
+    stooge = fopen("stooge.dat", "w");
+    
+    srand(time(0));
+    for(i = 1; i <= 500; i=i+1){
+        
+        a = (int*) malloc(i * sizeof(int));
+        b = (int*) malloc(i * sizeof(int));
+        
+        for(j = 0; j < i; j++)
+            a[j]=j+1;
+        
+        shuffle(a, i);
+        
+        for(j = 0; j < i; j++)
+            b[j]=a[j];
+        
+        
+        insergesort(a, i);
+        fprintf(inserge, "(%d, %d), ", i, compcount);
+        compcount = 0;
+        
+        stoogesort(b, 0, i-1);
+        fprintf(stooge, "(%d, %d), ", i, compcount);
+        compcount = 0;
+        
+    }
+    
+    fclose(inserge);
+    fclose(stooge);
+    
+}
+
+void insergesort(int *a, int sizea){
+    
+    if(sizea > 1){
+        
+        insergesort(a, sizea-1);
+        
+        compcount++;
+        if(a[sizea-1] < a[sizea-2]){
+            swap(&a[sizea-1], &a[sizea-2]);
+            insergesort(a, sizea-1);
+        }
+            
+    }
+}
+
+void stoogesort(int arr[], int low, int high){
+    
+    int temp, k;
+    
+    compcount++;
+    if (arr[low] > arr[high])
+        swap(&arr[low], &arr[high]);
+    
+    if ((low + 1) >= high)
+        return;
+    
+    
+    k = (int)((high - low + 1) / 3);
+    stoogesort(arr, low, high - k);
+    stoogesort(arr, low + k, high);
+    stoogesort(arr, low, high - k);
+}
+
+void swap(int *a, int *b){
+    
+    int c;
+    
+    c = *a;
+    *a = *b;
+    *b = c;
+    
+}
+
+void shuffle(int *array, size_t n){
+    if (n > 1) 
+    {
+        size_t i;
+        for (i = 0; i < n - 1; i++) 
+        {
+          size_t j = i + rand() / (RAND_MAX / (n - i) + 1);
+          int t = array[j];
+          array[j] = array[i];
+          array[i] = t;
+        }
+    }
+}
